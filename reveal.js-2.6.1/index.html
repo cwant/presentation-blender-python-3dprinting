@@ -72,9 +72,9 @@
 				</section>
 
 				<section>
-					<img width="320" height="240"
+					<img width="400" height="300"
 							 src="cwassets/images/small_chocomonkey17.jpg">
-					<img width="320" height="240"
+					<img width="400" height="300"
 							 src="cwassets/images/small_chocomonkey00.jpg">
 				</section>
 
@@ -95,8 +95,13 @@
 					<ul>
 						<li>Blender is released under a GPL license</li>
 						<li>Python scripting through a rich API</li>
-						<li>Keyboard with a numpad and a three button mouse
-							with a scrollwheeel recommended</li>
+						<li>Recommended:
+							<ul>
+								<li>Keyboard with a numpad</li>
+								<li>Three button mouse with a scrollwheeel</li>
+								<li>Best graphics card you can afford</li>
+							</ul>
+						</li>
 					</ul>
 					<a class="image" href="http://www.blender.org" target="_blank">
 						<img src="cwassets/images/blender.png">
@@ -129,20 +134,27 @@
 
 				<section>
 					<h2>Object and their data</h2>
+					<p>
+						An object is defined by the type of data it points to, e.g.,
+						mesh, camera, light, curve, text ...
+					</p>
 					<pre><code data-trim contenteditable>
 >>> ob = bpy.data.objects["Profile"]
 >>> ob.data
 bpy.data.meshes["Plane"]
 					</code></pre>
-
-					<p>Typically meshes are modeled in "Edit Mode".</p>
-					<p>Meshes are made of vertices, edges, and faces</p>
+					<pre><code data-trim contenteditable>
+>>> ob2 = bpy.data.objects["Camera"]
+>>> ob2.data
+bpy.data.cameras["Camera"]
+					</code></pre>
 				</section>
 
 				<section>
 					<h2>Modeling Meshes</h2>
 					<p>Typically meshes are modeled in "Edit Mode".</p>
 					<p>Meshes are made of vertices, edges, and faces</p>
+					<img src="cwassets/images/vert-edge-face.png">
 				</section>
 
 				<section>
@@ -163,13 +175,16 @@ bpy.data.meshes["Plane"]
 				</section>
 
 				<section>
-					<h2>Two approaches to constructing a mesh</h2>
-					<ul>
-						<li>Directly creating the vertices, edges and faces</li>
-						<li>Script the modeling actions to produce the mesh
-							through operators
-						</li>
-					</ul>
+					<h2>Profile to solid</h2>
+					<img src="cwassets/images/profile_to_thingy.png">
+					<p>Specify:
+						<ul>
+							<li>Radius</li>
+							<li>Resolution</li>
+							<li>Amplitude</li>
+							<li>Cycles (peaks/valleys)</li>
+						</ul>
+					</p>
 				</section>
 
 				<section>
