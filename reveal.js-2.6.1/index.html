@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<title>Python / Blender/ 3D Printing</title>
+		<meta name="author" content="C. Want">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style"
+					content="black-translucent" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write('<link rel="stylesheet" href="css/print/' +
+			  ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) +
+				'.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+			<div class="slides">
+
+				<section>
+					<h1>Python & Blender</h1>
+					<h3>Designing for 3D Printing</h3>
+					<p>
+						<small>An <a href="http://edmontonpy.com/">Edmonton.py</a>
+							presentation by<br />
+							<a href="http://cwant.ca">Chris Want</a> /
+							<a href="mailto:cjwant@gmail.com">cjwant@gmail.com</a>
+						</small>
+					</p>
+					<img src="cwassets/images/cc.png">
+				</section>
+
+				<section>
+					<h2>Road map</h2>
+
+					<ul>
+						<li>Talk about Blender in general</li>
+						<li>Modeling meshes</li>
+						<li>Python scripting</li>
+						<li>Exporting for 3D printing</li>
+						<li>ShapeWays 3D printing service bureau</li>
+						<li>Common issues</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>But first, a short bio ...</h2>
+					<ul>
+						<li>MSc in Math (U of A, long time ago)</li>
+						<li>Was a scientific visualization analyst at the U of A
+							for over a decade, lead the U of A's central 3D printer
+							for almost 10 years (ZCorp, plaster based).
+						</li>
+						<li>Former Blender developer (semi-retired)</li>
+						<li>Currently work for WestGrid, an HPC consortium</li>
+					</ul>
+				</section>
+
+				<section>
+					<img width="320" height="240"
+							 src="cwassets/images/small_chocomonkey17.jpg">
+					<img width="320" height="240"
+							 src="cwassets/images/small_chocomonkey00.jpg">
+				</section>
+
+				<section>
+					<h2>Blender</h2>
+
+					<p>From the Blender website:</p>
+
+					<blockquote cite="http://www.blender.org/about">
+						&ldquo;Blender is a free and open source 3D animation suite.
+						It supports the entirety of the 3D pipeline—modeling,
+						rigging, animation, simulation, rendering, compositing
+						and motion tracking, even video editing and game creation&rdquo;
+					</blockquote>
+				</section>
+
+				<section>
+					<ul>
+						<li>Blender is released under a GPL license</li>
+						<li>Python scripting through a rich API</li>
+						<li>Keyboard with a numpad and a three button mouse
+							with a scrollwheeel recommended</li>
+					</ul>
+					<a class="image" href="http://www.blender.org" target="_blank">
+						<img src="cwassets/images/blender.png">
+					</a>
+				</section>
+
+				<section>
+					<h2>Operators</h2>
+					<p>Most of the modeling is done through the menus or through
+						hot keys. These execute bits of code called "operators".
+					</p>
+					<p>Check out the tooltips</p>
+				</section>
+
+				<section>
+					<h2>bpy module and some of it's parts</h2>
+					<p>
+						<b>bpy.ops</b>:
+						Operators, e.g., things you might find in menus
+					</p>
+					<p>
+						<b>bpy.context</b>:
+						Read-only state of the program, depends on 
+					</p>
+					<p>
+						<b>bpy.data</b>:
+						A dictionary of data objects currently in the program
+					</p>
+				</section>
+
+				<section>
+					<h2>Object and their data</h2>
+					<pre><code data-trim contenteditable>
+>>> ob = bpy.data.objects["Profile"]
+>>> ob.data
+bpy.data.meshes["Plane"]
+					</code></pre>
+
+					<p>Typically meshes are modeled in "Edit Mode".</p>
+					<p>Meshes are made of vertices, edges, and faces</p>
+				</section>
+
+				<section>
+					<h2>Modeling Meshes</h2>
+					<p>Typically meshes are modeled in "Edit Mode".</p>
+					<p>Meshes are made of vertices, edges, and faces</p>
+				</section>
+
+				<section>
+					<h2>Mesh data structures</h2>
+					<p>Think of vertices as a zero-based list of coordinates
+					</p>
+					<p>Think of faces/edges as pointers into the list of vertices
+					</p>
+				</section>
+				
+				<section>
+					<h2>Python</h2>
+					<p>Done through either the text editor, the console, or
+						through installed scripts that show up in the menus
+					</p>
+					<p>We'll run our scripts through the text editor (execute with
+						Alt-P)</p>
+				</section>
+
+				<section>
+					<h2>Two approaches to constructing a mesh</h2>
+					<ul>
+						<li>Directly creating the vertices, edges and faces</li>
+						<li>Script the modeling actions to produce the mesh
+							through operators
+						</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Part 1: modules and globals</h2>
+					<pre><code data-trim contenteditable>
+import bpy
+from math import sin, cos, pi
+
+num_cycles = 4
+resolution = 64
+radius = 5
+amplitude = 1
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Part 2: setup</h2>
+					<pre><code data-trim contenteditable>
+def main():
+  oldob = bpy.data.objects["Profile"]
+  if oldob == None:
+    return
+
+  oldme = oldob.data
+
+  numvert = len(oldme.vertices)
+  numedge = len(oldme.edges)
+  numface = len(oldme.polygons)
+
+  verts = []
+  faces = []
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Part 3: main loop</h2>
+					<pre><code data-trim contenteditable>
+###### ... main() cont'd
+  for i in range(resolution):
+    for j in range(numvert):
+      # Duplicate and transform vertices
+      vold = oldme.vertices[j].co
+      vnew = transform_vert(vold, i)
+      verts.append(vnew)
+
+    # Extrude old edges into new faces
+    for j in range(numedge):
+      if oldme.edges[j].is_loose:
+        e = oldme.edges[j].vertices
+        f = edge_to_face(e, i, numvert)
+        faces.append(f)
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Part 4: creating the new mesh</h2>
+					<pre><code data-trim contenteditable>
+###### ... main() cont'd
+  me = bpy.data.meshes.new("thingy")
+  me.from_pydata(verts, [], faces)
+  ob = bpy.data.objects["thingy"]
+  ob.data = me
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Part 5: transforming the vertices</h2>
+					<pre><code data-trim contenteditable>
+def transform_vert(v, i):
+  prop = float(i) / float(resolution)
+  a = 2*pi*prop
+  b = a * num_cycles
+  cosa = cos(a)
+  sina = sin(a)
+  sinb = sin(b)
+  x =  (v[0] + radius) * cosa + v[1] * sina
+  y = -(v[0] + radius) * sina + v[1] * cosa
+  z = v[2] + sinb * amplitude
+
+  return [x, y, z]    
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Part 6: old edges become new faces</h2>
+					<pre><code data-trim contenteditable>
+def edge_to_face(e, i, numvert):
+  i1 = i
+  i2 = (i + 1) % (resolution)
+
+  f = [e[0] + i1*numvert,
+       e[1] + i1*numvert,
+       e[1] + i2*numvert,
+       e[0] + i2*numvert]
+
+  return f
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Part 7: call main (duh)</h2>
+					<pre><code data-trim contenteditable>
+main()
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Printability</h2>
+					<ul>
+						<li>Manifold surfaces</li>
+						<li>Surface normals</li>
+						<li>Faceting</li>
+						<li>Fragility</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Export</h2>
+					<ul>
+						<li>STL (Stereolithography) for monochrome</li>
+						<li>Color</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Service Bureau</h2>
+					<ul>
+						<li>ShapeWays</li>
+						<li>Materials</li>
+					</ul>
+				</section>
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
