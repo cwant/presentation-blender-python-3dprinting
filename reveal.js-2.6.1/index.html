@@ -53,8 +53,8 @@
 						<li>Modeling meshes</li>
 						<li>Python scripting</li>
 						<li>Exporting for 3D printing</li>
-						<li>ShapeWays 3D printing service bureau</li>
 						<li>Common issues</li>
+						<li>ShapeWays 3D printing service bureau</li>
 					</ul>
 				</section>
 
@@ -72,10 +72,12 @@
 				</section>
 
 				<section>
-					<img width="400" height="300"
-							 src="cwassets/images/small_chocomonkey17.jpg">
-					<img width="400" height="300"
-							 src="cwassets/images/small_chocomonkey00.jpg">
+					<a class="image" href="http://cwant.ca" target="_blank">
+						<img width="400" height="300"
+								 src="cwassets/images/small_chocomonkey17.jpg">
+						<img width="400" height="300"
+								 src="cwassets/images/small_chocomonkey00.jpg">
+					</a>
 				</section>
 
 				<section>
@@ -109,31 +111,50 @@
 				</section>
 
 				<section>
+					<h2>Python</h2>
+					<p>Three ways to access python</p>
+					<p>
+						<ul>
+							<li>Built in text editor</li>
+							<li>The python console</li>
+							<li>Installed scripts that show up in the menus</li>
+						</ul>
+					</p>
+					<p>We'll run our scripts through the text editor</p>
+					<p>Execute with Alt-P while your mouse is in the editor</p>
+				</section>
+
+				<section>
 					<h2>Operators</h2>
 					<p>Most of the modeling is done through the menus or through
 						hot keys. These execute bits of code called "operators".
+						The Python API maps well to these operators.
 					</p>
 					<p>Check out the tooltips</p>
+					<p>
+						<a class="image" href="cwassets/images/tooltip.png"
+							 target="_blank">
+							<img src="cwassets/images/tooltip.png">
+						</a>
+					</p>
 				</section>
 
 				<section>
 					<h2>bpy module and some of it's parts</h2>
-					<p>
-						<b>bpy.ops</b>:
-						Operators, e.g., things you might find in menus
-					</p>
-					<p>
-						<b>bpy.context</b>:
-						Read-only state of the program, depends on 
-					</p>
-					<p>
-						<b>bpy.data</b>:
-						A dictionary of data objects currently in the program
-					</p>
+					<ul>
+						<li><b>bpy.types</b>:
+							The main data classes for the objects in Blender</li>
+						<li><b>bpy.data</b>:
+							Access to data within the program</li>
+						<li><b>bpy.ops</b>: 
+							Operators, e.g., things you might find in menus</li>
+						<li><b>bpy.context</b>:
+							State of the program, for example the current view or scene</li>
+					</ul>
 				</section>
 
 				<section>
-					<h2>Object and their data</h2>
+					<h2>Objects and their data</h2>
 					<p>
 						An object is defined by the type of data it points to, e.g.,
 						mesh, camera, light, curve, text ...
@@ -165,15 +186,6 @@ bpy.data.cameras["Camera"]
 					</p>
 				</section>
 				
-				<section>
-					<h2>Python</h2>
-					<p>Done through either the text editor, the console, or
-						through installed scripts that show up in the menus
-					</p>
-					<p>We'll run our scripts through the text editor (execute with
-						Alt-P)</p>
-				</section>
-
 				<style>
 .col {
     display: inline-block;
@@ -247,7 +259,7 @@ faces = [
 me = bpy.data.meshes.new("me")
 me.from_pydata(verts,
                edges,
-               [])
+               faces)
 ob = bpy.data.objects.new("ob",
                           me)
 scn = bpy.context.scene
@@ -266,8 +278,16 @@ ob.select = True
 				<section>
 					<h2>Profile to solid</h2>
 					<img src="cwassets/images/profile_to_thingy.png">
-					<p>Specify:
+					<p>
+						<a href="cwassets/blend/edpy1.1.blend">edpy1.1.blend</a>
+					</p>
+				</section>
+
+				<section>
+					<h2>Specification</h2>
+					<p>To create the shape, we must specify:</p>
 						<ul>
+							<li>Profile shape</li>
 							<li>Radius</li>
 							<li>Resolution</li>
 							<li>Amplitude</li>
@@ -374,7 +394,8 @@ def edge_to_face(e, i, numvert):
 				</section>
 
 				<section>
-					<h2>Part 7: call main (duh)</h2>
+					<h2>Part 7: call main</h2>
+					<h3>(duh)</h3>
 					<pre><code data-trim contenteditable>
 main()
 					</code></pre>
@@ -382,28 +403,71 @@ main()
 
 				<section>
 					<h2>Printability</h2>
-					<ul>
-						<li>Manifold surfaces</li>
-						<li>Surface normals</li>
-						<li>Faceting</li>
-						<li>Fragility</li>
-					</ul>
+					<h3>Manifold Surfaces</h3>
+					<img src="cwassets/images/non_manifold.png">
+					<p>The interior must be clearly defined</p>
+				</section>
+
+				<section>
+					<h2>Printability</h2>
+					<h3>Fragility</h3>
+					<img src="cwassets/images/fragile.png">
+				</section>
+
+				<section>
+					<h2>Printability</h2>
+					<h3>Faceting</h3>
+					<img src="cwassets/images/faceted1.png">
+					<img src="cwassets/images/faceted2.png">
+					<p>The subdivision surface modifier is your friend!</p>
 				</section>
 
 				<section>
 					<h2>Export</h2>
+					<p>From the File/Export menu ...</p>
+					<p>Recommendations:</p>
 					<ul>
 						<li>STL (Stereolithography) for monochrome</li>
-						<li>Color</li>
+						<li>X3D for color</li>
+						<li>Think about the size of your object before exporting</li>
 					</ul>
 				</section>
 
 				<section>
 					<h2>Service Bureau</h2>
+					<p>I use ShapeWays, because:</p>
+					<div class="container">
+						<span class="col">
+							<ul>
+								<li>Material selection</li>
+								<li>Price</li>
+								<li>Turnaround</li>
+								<li>Buy or Sell (Shops)</li>
+							</ul>
+						</span>
+						<span class="col">
+							<a class="image"
+								 href="https://www.shapeways.com/shops/cwant"
+								 target="_blank">
+								<img src="cwassets/images/shapeways.png">
+							</a>
+						</span>
+					</div>
+				</section>
+
+				<section>
+					<h2>More information ...</h2>
 					<ul>
-						<li>ShapeWays</li>
-						<li>Materials</li>
+						<li><a href="http://www.blender.org">Blender website</a></li>
+						<li><a href="http://www.blender.org/documentation/250PythonDoc">Redirect to current Python API</a></li>
+						<li><a href="http://wiki.blender.org/index.php/Extensions:2.6/Py/Scripts/Modeling/PrintToolbox">3D Printing addon</a></li>
+						<li><a href="http://wiki.blender.org/index.php/Doc:2.6/Manual/Extensions/Python/Console">Wiki page on the python console</a></li>
 					</ul>
+				</section>
+
+				<section>
+					<h1>Thanks!</h1>
+					<h3>Questions?</h3>
 				</section>
 			</div>
 
