@@ -290,7 +290,8 @@ ob.select = True
 					<h2>Specification</h2>
 					<p>To create the shape, we must specify:</p>
 						<ul>
-							<li>Profile shape</li>
+							<li>Profile shape (with <b>numverts</b> vertices,
+								connected by edges)</li>
 							<li>Radius</li>
 							<li>Resolution</li>
 							<li>Amplitude</li>
@@ -300,14 +301,17 @@ ob.select = True
 				</section>
 
 				<section>
-					<h2>Implimentation, part 1</h2>
-					<p>Copy vertices mulitple times, based on resolution</p>
+					<h2>Implementation, part 1</h2>
+					<p>Copy <b>numverts</b> vertices mulitple times, based
+						on resolution</p>
 					<img src="cwassets/images/copy_verts.png">
 				</section>
 
 				<section>
-					<h2>Implimentation, part 2</h2>
-					<p>Old edges become new faces</p>
+					<h2>Implementation, part 2</h2>
+					<p>Old edges become new faces.</p>
+					<p>Exploit the fact that we are connecting vertices who's 
+						indices are <b>numverts</b> apart.</p>
 					<img src="cwassets/images/edge_to_face.png">
 				</section>
 				<section>
