@@ -1,2 +1,8 @@
-*~
-*.blend[0-9]
+.DS_Store
+.svn
+log/*.log
+tmp/**
+node_modules/
+.sass-cache
+~
+.blend[0-9]

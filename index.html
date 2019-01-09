@@ -1,1 +1,700 @@
-reveal.js-2.6.1/index.html
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Python / Blender/ 3D Printing</title>
+
+		<meta name="description" content="Python / Blender/ 3D Printing">
+		<meta name="author" content="C. Want">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/league.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+
+		<div class="reveal">
+			<div class="slides">
+
+				<section>
+					<h1>Python & Blender</h1>
+					<h3>Designing for 3D Printing</h3>
+					<p>
+						<small>An <a href="http://edmontonpy.com/">Edmonton.py</a>
+							presentation by<br />
+							<a href="http://cwant.ca">Chris Want</a> /
+							<a href="mailto:cjwant@gmail.com">cjwant@gmail.com</a> /
+							<a href="https://twitter.com/cwant">@cwant</a>
+						</small>
+					</p>
+					<a class="image" href="http://creativecommons.org/licenses/by-nc-sa/4.0/deed.en_US">
+						<img src="cwassets/images/cc.png">
+					</a>
+				</section>
+
+				<section>
+					<h2>Road map</h2>
+
+					<ul>
+						<li>Talk about Blender in general</li>
+						<li>Modeling meshes</li>
+						<li>Python scripting</li>
+						<li>Exporting for 3D printing</li>
+						<li>Common issues</li>
+						<li>ShapeWays 3D printing service bureau</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>But first, a short bio ...</h2>
+					<ul>
+						<li>MSc in Math (U of A, long time ago)</li>
+						<li>Previously a scientific visualization analyst at
+							the U of A, lead the U of A's central 3D printer
+							for almost 10 years (ZCorp, plaster based).
+						</li>
+						<li>Former Blender developer (semi-retired)</li>
+						<li>Currently work for WestGrid, an HPC consortium</li>
+					</ul>
+				</section>
+
+				<section>
+					<a class="image" href="http://cwant.ca" target="_blank">
+						<img width="400" height="300"
+								 src="cwassets/images/small_chocomonkey17.jpg">
+						<img width="400" height="300"
+								 src="cwassets/images/small_chocomonkey00.jpg">
+					</a>
+				</section>
+
+				<section>
+					<h2>Blender</h2>
+
+					<p>From the Blender website:</p>
+
+					<blockquote cite="http://www.blender.org/about">
+						&ldquo;Blender is a free and open source 3D animation suite.
+						It supports the entirety of the 3D pipeline—modeling,
+						rigging, animation, simulation, rendering, compositing
+						and motion tracking, even video editing and game creation&rdquo;
+					</blockquote>
+				</section>
+
+				<section>
+					<ul>
+						<li>Blender is released under a GPL license</li>
+						<li>Python scripting through a rich API</li>
+						<li>Recommended:
+							<ul>
+								<li>Keyboard with a numpad</li>
+								<li>Three button mouse with a scrollwheeel</li>
+								<li>Best graphics card you can afford</li>
+							</ul>
+						</li>
+					</ul>
+					<a class="image" href="http://www.blender.org" target="_blank">
+						<img src="cwassets/images/blender.png">
+					</a>
+				</section>
+
+				<section>
+					<h2>Python</h2>
+					<p>Three ways to access python</p>
+					<p>
+						<ul>
+							<li>Built in text editor</li>
+							<li>The python console</li>
+							<li>Installed scripts that show up in the menus</li>
+						</ul>
+					</p>
+					<p>We'll run our scripts through the text editor</p>
+					<p>Execute with Alt-P while your mouse is in the editor</p>
+				</section>
+
+				<section>
+					<h2>Operators</h2>
+					<p>Most of the modeling is done through the menus or through
+						hot keys. These execute bits of code called "operators".
+						The Python API maps well to these operators.
+					</p>
+					<p>Check out the tooltips</p>
+					<p>
+						<a class="image" href="cwassets/images/tooltip.png"
+							 target="_blank">
+							<img src="cwassets/images/tooltip.png">
+						</a>
+					</p>
+				</section>
+
+				<section>
+					<h2>bpy module and some of it's parts</h2>
+					<ul>
+						<li><b>bpy.types</b>:
+							The main data classes for the objects in Blender</li>
+						<li><b>bpy.data</b>:
+							Access to data within the program</li>
+						<li><b>bpy.ops</b>: 
+							Operators, e.g., things you might find in menus</li>
+						<li><b>bpy.context</b>:
+							State of the program, for example the current view or scene</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Objects and their data</h2>
+					<p>
+						An object is defined by the type of data it points to, e.g.,
+						mesh, camera, lamp, curve, text ...
+					</p>
+					<pre><code data-trim contenteditable>
+>>> ob = bpy.data.objects["Profile"]
+>>> ob.data
+bpy.data.meshes["Plane"]
+					</code></pre>
+					<pre><code data-trim contenteditable>
+>>> ob2 = bpy.data.objects["Camera"]
+>>> ob2.data
+bpy.data.cameras["Camera"]
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Modeling Meshes</h2>
+					<p>Typically meshes are modeled in "Edit Mode".</p>
+					<p>Meshes are made of vertices, edges, and faces</p>
+					<img src="cwassets/images/vert-edge-face.png">
+				</section>
+
+				<section>
+					<h2>Mesh data structures</h2>
+					<p>Think of vertices as a zero-based list of coordinates
+					</p>
+					<p>Think of faces/edges as pointers into the list of vertices
+					</p>
+				</section>
+				
+				<style>
+.col {
+    display: inline-block;
+    vertical-align: middle !important;
+    width: 45%;
+    margin-right: 20px;
+}
+				</style>
+				<section>
+					<h2>Vertices</h2>
+					<div class="container">
+						<span class="col">
+							<pre><code data-trim contenteditable>
+# A list of 3D coordinates
+verts = [
+  [1, 1, 0],
+  [1, -1, 0],
+  [-1, -1, 0],
+  [-1, 1, 0]
+]
+							</code></pre>
+						</span>
+						<span class="col">
+							<img src="cwassets/images/verts.png">
+						</span>
+					</div>
+				</section>
+
+				<section>
+					<h2>Edges</h2>
+					<div class="container">
+						<span class="col">
+							<pre><code data-trim contenteditable>
+# List the verts to connect
+edges = [
+  [0, 1],
+  [1, 2]
+]
+							</code></pre>
+						</span>
+						<span class="col">
+							<img src="cwassets/images/verts_edges.png">
+						</span>
+					</div>
+				</section>
+
+				<section>
+					<h2>Faces</h2>
+					<div class="container">
+						<span class="col">
+							<pre><code data-trim contenteditable>
+# List the verts to span
+faces = [
+  [0, 2, 3]
+]
+							</code></pre>
+						</span>
+						<span class="col">
+							<img src="cwassets/images/verts_face.png">
+						</span>
+					</div>
+				</section>
+
+				<section>
+					<h2>bpy.types.Mesh.from_pydata</h2>
+					<div class="container">
+						<span class="col">
+							<pre><code data-trim contenteditable>
+# The magic is done by:
+#   bpy.types.Mesh.from_pydata
+me = bpy.data.meshes.new("me")
+me.from_pydata(verts,
+               edges,
+               faces)
+ob = bpy.data.objects.new("ob",
+                          me)
+scn = bpy.context.scene
+scn.objects.link(ob)
+# Not needed
+scn.objects.active = ob
+ob.select = True
+							</code></pre>
+						</span>
+						<span class="col">
+							<img src="cwassets/images/from_pydata.png">
+						</span>
+					</div>
+				</section>
+
+				<section>
+					<h2>Profile to solid</h2>
+					<img src="cwassets/images/profile_to_thingy.png">
+					<p>
+						<a href="cwassets/blend/edpy1.1.blend">edpy1.1.blend</a>
+					</p>
+				</section>
+
+				<section>
+					<h2>Specification</h2>
+					<p>To create the shape, we must specify:</p>
+						<ul>
+							<li>Profile shape (with <b>numverts</b> vertices,
+								connected by edges)</li>
+							<li>Radius</li>
+							<li>Resolution</li>
+							<li>Amplitude</li>
+							<li>Cycles (peaks/valleys)</li>
+						</ul>
+					</p>
+				</section>
+
+				<section>
+					<h2>Implementation, part 1</h2>
+					<p>Copy <b>numverts</b> vertices mulitple times, based
+						on resolution</p>
+					<img src="cwassets/images/copy_verts.png">
+				</section>
+
+				<section>
+					<h2>Implementation, part 2</h2>
+					<p>Old edges become new faces.</p>
+					<p>Exploit the fact that we are connecting vertices who's 
+						indices are <b>numverts</b> apart.</p>
+					<img src="cwassets/images/edge_to_face.png">
+				</section>
+				<section>
+					<h2>Part 1: modules and globals</h2>
+					<pre><code data-trim contenteditable>
+import bpy
+from math import sin, cos, pi
+
+num_cycles = 4
+resolution = 64
+radius = 5
+amplitude = 1
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Part 2: setup</h2>
+					<pre><code data-trim contenteditable>
+def main():
+  oldob = bpy.data.objects["Profile"]
+  if oldob == None:
+    return
+
+  oldme = oldob.data
+
+  numvert = len(oldme.vertices)
+  numedge = len(oldme.edges)
+  numface = len(oldme.polygons)
+
+  verts = []
+  faces = []
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Part 3: main loop</h2>
+					<pre><code data-trim contenteditable>
+###### ... main() cont'd
+  for i in range(resolution):
+    for j in range(numvert):
+      # Duplicate and transform vertices
+      vold = oldme.vertices[j].co
+      vnew = transform_vert(vold, i)
+      verts.append(vnew)
+
+    # Extrude old edges into new faces
+    for j in range(numedge):
+      if oldme.edges[j].is_loose:
+        e = oldme.edges[j].vertices
+        f = edge_to_face(e, i, numvert)
+        faces.append(f)
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Part 4: creating the new mesh</h2>
+					<pre><code data-trim contenteditable>
+###### ... main() cont'd
+  me = bpy.data.meshes.new("thingy")
+  me.from_pydata(verts, [], faces)
+  ob = bpy.data.objects["thingy"]
+  ob.data = me
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Part 5: transforming the vertices</h2>
+					<pre><code data-trim contenteditable>
+def transform_vert(v, i):
+  prop = float(i) / float(resolution)
+  a = 2*pi*prop
+  b = a * num_cycles
+  cosa = cos(a)
+  sina = sin(a)
+  sinb = sin(b)
+  x =  (v[0] + radius) * cosa + v[1] * sina
+  y = -(v[0] + radius) * sina + v[1] * cosa
+  z = v[2] + sinb * amplitude
+
+  return [x, y, z]    
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Part 6: old edges become new faces</h2>
+					<pre><code data-trim contenteditable>
+def edge_to_face(e, i, numvert):
+  i1 = i
+  i2 = (i + 1) % (resolution)
+
+  f = [e[0] + i1*numvert,
+       e[1] + i1*numvert,
+       e[1] + i2*numvert,
+       e[0] + i2*numvert]
+
+  return f
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Part 7: call main</h2>
+					<h3>(duh)</h3>
+					<pre><code data-trim contenteditable>
+main()
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Printability</h2>
+					<h3>Manifold Surfaces</h3>
+					<img src="cwassets/images/non_manifold.png">
+					<p>The interior must be clearly defined</p>
+				</section>
+
+				<section>
+					<h2>Printability</h2>
+					<h3>Fragility</h3>
+					<img src="cwassets/images/fragile.png">
+				</section>
+
+				<section>
+					<h2>Printability</h2>
+					<h3>Faceting</h3>
+					<img src="cwassets/images/faceted1.png">
+					<img src="cwassets/images/faceted2.png">
+					<p>The subdivision surface modifier is your friend!</p>
+				</section>
+
+				<section>
+					<h2>Export</h2>
+					<p>From the File/Export menu ...</p>
+					<p>Recommendations:</p>
+					<ul>
+						<li>STL (Stereolithography) for monochrome</li>
+						<li>X3D for color</li>
+						<li>Think about the size of your object before exporting</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Service Bureau</h2>
+					<p>I use ShapeWays, because:</p>
+					<div class="container">
+						<span class="col">
+							<ul>
+								<li>Material selection</li>
+								<li>Price</li>
+								<li>Turnaround</li>
+								<li>Buy or Sell (Shops)</li>
+							</ul>
+						</span>
+						<span class="col">
+							<a class="image"
+								 href="https://www.shapeways.com/shops/cwant"
+								 target="_blank">
+								<img src="cwassets/images/shapeways.png">
+							</a>
+						</span>
+					</div>
+				</section>
+
+				<section>
+					<h2>Example 1: Charms</h2>
+					<div class="container">
+						<span class="col">
+							<ul>
+								<li>Lost wax casting</li>
+								<li>Polished silver</li>
+								<li>$111 USD (incl. shipping)</li>
+								<li>$16 brokerage</li>
+								<li>23 days</li>
+							</ul>
+						</span>
+						<span class="col">
+							<a class="image"
+								 href="cwassets/images/charms.png"
+								 target="_blank">
+								<img src="cwassets/images/charms.png">
+							</a>
+						</span>
+					</div>
+				</section>
+
+				<section>
+					<h2>Example 2: Rings</h2>
+					<div class="container">
+						<span class="col">
+							<ul>
+								<li>Stainless steel, gold plated steel,
+									raw brass, raw bronze</li>
+								<li>$76.60 USD</li>
+								<li>Free shipping!</li>
+								<li>15 days</li>
+							</ul>
+						</span>
+						<span class="col">
+							<a class="image"
+								 href="cwassets/images/rings.png"
+								 target="_blank">
+								<img src="cwassets/images/rings.png">
+							</a>
+						</span>
+					</div>
+				</section>
+
+				<section>
+					<h2>Another form of tangible output ...</h2>
+					<p><a href="http://www.lasercrystalawards.com/index.html">
+							Laser Crystal Awards</a></p>
+					<div class="container">
+						<span class="col">
+							<ul>
+								<li>Etched clear plastic</li>
+								<li>2 inch cube: $20</li>
+								<li>Light base: $20</li>
+								<li>Shipping: $20</li>
+								<li>Order multiples to reduce average cost</li>
+							</ul>
+						</span>
+						<span class="col">
+							<a class="image"
+								 href="cwassets/images/laser_crystal.png"
+								 target="_blank">
+								<img src="cwassets/images/laser_crystal.png">
+							</a>
+						</span>
+					</div>
+				</section>
+
+				<section>
+					<h2>More information ...</h2>
+					<ul>
+						<li><a href="http://www.blender.org">Blender website</a></li>
+						<li><a href="http://www.blender.org/documentation/250PythonDoc">Redirect to current Python API</a></li>
+						<li><a href="http://wiki.blender.org/index.php/Extensions:2.6/Py/Scripts/Modeling/PrintToolbox">3D Printing addon</a></li>
+						<li><a href="http://wiki.blender.org/index.php/Doc:2.6/Manual/Extensions/Python/Console">Wiki page on the python console</a></li>
+						<li><a href="http://www.blender3d.org/e-shop/product_info_n.php?products_id=160">3D Printing training DVD</a></li>
+					</ul>
+				</section>
+
+				<section>
+					<h1>Thanks!</h1>
+					<h3>Questions?</h3>
+				</section>
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/search/search.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+		<!-- Everything below this point is only used for the reveal.js demo page -->
+
+		<a class="fork-reveal" style="display: none;" href="https://github.com/hakimel/reveal.js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github-camo.global.ssl.fastly.net/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork reveal.js on GitHub"></a>
+
+		<div class="share-reveal" style="display: none; position: absolute; bottom: 16px; left: 50%; margin-left: -139px; z-index: 20;">
+			<a class="share-reveal-editor" href="https://slides.com">Try the online editor</a>
+
+			<a class="share-reveal-facebook" href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Frevealjs.com">
+				<svg viewBox="-8 -8 48 48" width="20" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+					<path fill="#FFFFFF" d="M25.613-4.557c0,0-3.707,0-6.166,0c-3.662,0-7.732,1.535-7.732,6.835c0.019,1.845,0,3.613,0,5.603H7.481 v6.728h4.366v19.37h8.021V14.48h5.295l0.479-6.618h-5.913c0,0,0.016-2.946,0-3.8c0-2.093,2.184-1.974,2.312-1.974 c1.042,0,3.059,0.003,3.578,0v-6.646H25.613z"/>
+				</svg>
+			</a>
+
+			<a class="share-reveal-twitter" href="http://twitter.com/share?url=http%3A%2F%2Frevealjs.com&text=reveal.js%20-%20The%20HTML%20presentation%20framework&via=revealjs&related=revealjs">
+				<svg viewbox="0 0 2000 1625.36" width="20" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+					<path d="m 1999.9999,192.4 c -73.58,32.64 -152.67,54.69 -235.66,64.61 84.7,-50.78 149.77,-131.19 180.41,-227.01 -79.29,47.03 -167.1,81.17 -260.57,99.57 C 1609.3399,49.82 1502.6999,0 1384.6799,0 c -226.6,0 -410.328,183.71 -410.328,410.31 0,32.16 3.628,63.48 10.625,93.51 -341.016,-17.11 -643.368,-180.47 -845.739,-428.72 -35.324,60.6 -55.5583,131.09 -55.5583,206.29 0,142.36 72.4373,267.95 182.5433,341.53 -67.262,-2.13 -130.535,-20.59 -185.8519,-51.32 -0.039,1.71 -0.039,3.42 -0.039,5.16 0,198.803 141.441,364.635 329.145,402.342 -34.426,9.375 -70.676,14.395 -108.098,14.395 -26.441,0 -52.145,-2.578 -77.203,-7.364 52.215,163.008 203.75,281.649 383.304,284.946 -140.429,110.062 -317.351,175.66 -509.5972,175.66 -33.1211,0 -65.7851,-1.949 -97.8828,-5.738 181.586,116.4176 397.27,184.359 628.988,184.359 754.732,0 1167.462,-625.238 1167.462,-1167.47 0,-17.79 -0.41,-35.48 -1.2,-53.08 80.1799,-57.86 149.7399,-130.12 204.7499,-212.41" style="fill:#ffffff"/>
+				</svg>
+			</a>
+		</div>
+
+		<style>
+			/* Social sharing */
+			.share-reveal a {
+				display: inline-block;
+				height: 34px;
+				line-height: 32px;
+				padding: 0 10px;
+				color: #fff;
+				font-family: Helvetica, sans-serif;
+				text-decoration: none;
+				font-weight: bold;
+				font-size: 12px;
+				vertical-align: top;
+				text-transform: uppercase;
+				box-sizing: border-box;
+			}
+
+			.share-reveal .share-reveal-editor {
+				line-height: 30px;
+			}
+
+			.share-reveal svg {
+				vertical-align: middle;
+			}
+
+			.share-reveal a + a {
+				margin-left: 10px;
+			}
+
+			.share-reveal-editor {
+				border: 2px solid #fff;
+			}
+
+			.share-reveal-twitter,
+			.share-reveal-follow {
+				background-color: #00aced;
+			}
+
+			.share-reveal-facebook {
+				background-color: #4B71B8;
+			}
+
+			/* Advertising */
+			#carbonads {
+				width: 370px;
+				min-height: 100px;
+				font-size: 18px;
+				border: 1px solid rgba(255, 255, 255, 0.2);
+				padding: 10px;
+				margin: 40px auto 0 auto;
+				font-size: 16px;
+				z-index: 10;
+				text-align: left;
+			}
+
+			#carbonads .carbon-img img {
+				float: left;
+				margin: 0 10px 0 0;
+				border: 0;
+				box-shadow: none;
+			}
+
+			#carbonads .carbon-poweredby {
+				display: block;
+				margin-top: 10px;
+				color: #aaa;
+			}
+		</style>
+
+		<script>
+		var _gaq = [['_setAccount', 'UA-15240703-1'], ['_trackPageview']];
+		(function(d, t) {
+		var g = d.createElement(t),
+			s = d.getElementsByTagName(t)[0];
+		g.async = true;
+		g.src = ('https:' == location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		s.parentNode.insertBefore(g, s);
+		})(document, 'script');
+		</script>
+
+	</body>
+</html>
